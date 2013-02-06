@@ -1,0 +1,14 @@
+# coroutines
+git+https://github.com/SiteSupport/gevent.git/@1.0rc2#egg=gevent
+
+# python lib for zeroMQ
+pyzmq=2.2.0.1
+
+# lang detect
+chromium-compact-language-detector
+
+# replacement package for re
+regex
+
+# math...
+numpy
