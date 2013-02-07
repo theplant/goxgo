@@ -21,12 +21,13 @@ To start playing and testing NLP and statistical features i think it makes
 a lot of sense to use stuff that's out there (and was written by linguists
 or mathematicians specialized in scientific computing ;)
 
-
 To network those services i chose
 ZMQ(http://zguide.zeromq.org/page:all#-MQ-in-a-Hundred-Words).
 The python code i built some examples with already has some stubs to also
 provide an HTTP frontend. It also uses gevent (http://gevent.org/) which is a
-coroutine implementation for python using libev in the background.
+coroutine implementation for python using libev in the background. Data is
+exchanged in JSON right now - MsgPack might be even more effective
+(http://msgpack.org/).
 
 The idea is to basically have a bunch of (static) functions that you want to
 call from go:
