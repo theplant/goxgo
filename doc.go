@@ -25,7 +25,8 @@ or mathematicians specialized in scientific computing ;)
 To network those services i chose
 ZMQ(http://zguide.zeromq.org/page:all#-MQ-in-a-Hundred-Words).
 The python code i built some examples with already has some stubs to also
-provide an HTTP frontend.
+provide an HTTP frontend. It also uses gevent (http://gevent.org/) which is a
+coroutine implementation for python using libev in the background.
 
 The idea is to basically have a bunch of (static) functions that you want to
 call from go:
@@ -64,7 +65,7 @@ Try it:
 
 First you need to install some stuff:
 
-You need python2.7+, and pip
+You need python2.7+, pip, libev4, libev-dev
 
  [OPTIONAL] python2.7 dev-headers, cython, std buildtools [/OPTIONAL]
 
@@ -89,11 +90,11 @@ Then you can install the needed python packages:
 
  from the file goxgo/py_services/test_server.py
 
- and comment everything after (currently line 69)
+ and comment everything after
 
  	// test vsm diff
 
- in tests/goxgo_test.go
+ in tests/goxgo_test.go (currently line 69)
 
 
 To run the python service:
