@@ -35,14 +35,16 @@ type Conn struct {
 /*
 Set up the connection to a goxgo service specified by the DSN
 */
-func (c *Conn) Connect(dsn *DSN) (err error) {
+func (c *Conn) Dial(dsn *DSN) (err error) {
 	c.Context, err = zmq.NewContext()
 	if err != nil {
-		panic(fmt.Sprintf("Could not acquire ZMQ context: %+v", err.Error()))
+		return err
+		// panic(fmt.Sprintf("Could not acquire ZMQ context: %+v", err.Error()))
 	}
 	c.Socket, err = c.Context.NewSocket(zmq.REQ)
 	if err != nil {
-		panic(fmt.Sprintf("Could not acquire ZMQ socket: %+v", err.Error()))
+		return err
+		// panic(fmt.Sprintf("Could not acquire ZMQ socket: %+v", err.Error()))
 	}
 	// using a global context and then making a lot of calls from separate
 	// goroutines produces funky behaviour - running out of fds and
@@ -54,7 +56,7 @@ func (c *Conn) Connect(dsn *DSN) (err error) {
 	if err == nil {
 		c.connected = true
 	}
-	// fmt.Println("Connecting to: " + fmt.Sprintf("%v://%v:%v", dsn.Protocol, dsn.Host, dsn.Port) )
+	// fmt.Println("Dialing to: " + fmt.Sprintf("%v://%v:%v", dsn.Protocol, dsn.Host, dsn.Port) )
 	c.Socket.Connect(fmt.Sprintf("%v://%v:%v", dsn.Protocol, dsn.Host, dsn.Port))
 	return
 }
@@ -97,7 +99,7 @@ structure.
 func Call( dsn *DSN, request interface{}, response interface{}) {
 	c := Conn{Dsn: dsn}
 	var err error
-	err = c.Connect(dsn)
+	err = c.Dial(dsn)
 	if err != nil {
 		fmt.Println("Shit hit the fan: %v.", err)
 	}
