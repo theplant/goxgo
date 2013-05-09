@@ -18,17 +18,17 @@ TODO: http protocol support. will need some refactoring
 */
 type DSN struct {
 	Protocol string
-	Host	 string
-	Port	 int
+	Host     string
+	Port     int
 }
 
 /*
 Conn - ZMQ connection structure
 */
 type Conn struct {
-	Dsn		  *DSN
-	Context   zmq.Context
-	Socket    zmq.Socket
+	Dsn       *DSN
+	Context   *zmq.Context
+	Socket    *zmq.Socket
 	connected bool
 }
 
@@ -60,7 +60,6 @@ func (c *Conn) Dial(dsn *DSN) (err error) {
 	c.Socket.Connect(fmt.Sprintf("%v://%v:%v", dsn.Protocol, dsn.Host, dsn.Port))
 	return
 }
-
 
 /*
 Close the connections zmq socket and zmq context
@@ -96,7 +95,7 @@ Convinience function that will create a connection,
 send a payload and Unserialize the reponse into a response
 structure.
 */
-func Call( dsn *DSN, request interface{}, response interface{}) {
+func Call(dsn *DSN, request interface{}, response interface{}) {
 	c := Conn{Dsn: dsn}
 	var err error
 	err = c.Dial(dsn)
