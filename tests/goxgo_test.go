@@ -1,33 +1,31 @@
 package goxgo
 
 import (
-	"time"
+	gxg "github.com/theplant/goxgo"
 	"testing"
-	gxg "goxgo"
-	)
-
+	"time"
+)
 
 func showResults(t *testing.T, results <-chan []string, done chan<- bool) {
 	for {
 		select {
-		case res:= <- results:
-			t.Logf( "result: %+v", res )
+		case res := <-results:
+			t.Logf("result: %+v", res)
 		}
 	}
 	done <- true
 }
 
-
 func TestGoXGo(t *testing.T) {
 	dsn := gxg.DSN{
 		Protocol: "tcp",
-		Host: "localhost",
-		Port: 4242,
+		Host:     "localhost",
+		Port:     4242,
 	}
 
-	tokenizePayload := gxg.TokenizeRequest {
-		Target: &gxg.CallTarget { Services: []string{"NLTK/tokenize"}, Version: "0.1" },
-		Body: "Give me a tokenized version of this unoptimzed body of text pls. Once successfully done we will try to stem the words too. Testing trying embodiment embodied",
+	tokenizePayload := gxg.TokenizeRequest{
+		Target: &gxg.CallTarget{Services: []string{"NLTK/tokenize"}, Version: "0.1"},
+		Body:   "Give me a tokenized version of this unoptimzed body of text pls. Once successfully done we will try to stem the words too. Testing trying embodiment embodied",
 		Locale: "en",
 	}
 
@@ -35,9 +33,9 @@ func TestGoXGo(t *testing.T) {
 	gxg.Call(&dsn, &tokenizePayload, &tokenizeResponse)
 	t.Logf("%+v", tokenizeResponse)
 
-	stemPayload := gxg.StemRequest {
-		Target: &gxg.CallTarget { Services: []string{"NLTK/stem"}, Version: "0.1" },
-		Words: tokenizeResponse.Tokens,
+	stemPayload := gxg.StemRequest{
+		Target: &gxg.CallTarget{Services: []string{"NLTK/stem"}, Version: "0.1"},
+		Words:  tokenizeResponse.Tokens,
 		Locale: tokenizeResponse.Locale,
 	}
 
@@ -45,16 +43,15 @@ func TestGoXGo(t *testing.T) {
 	gxg.Call(&dsn, &stemPayload, &stemResponse)
 	t.Logf("%+v", stemResponse)
 
-
 	// goroutine requests
 	var iter int
 	iter = 3
 	results := make(chan []string, iter)
 	done := make(chan bool)
 	for i := 0; i < iter; i++ {
-		payload := gxg.TokenizeRequest {
-			Target: &gxg.CallTarget { Services: []string{"NLTK/tokenize"}, Version: "0.1" },
-			Body: "Give me a tokenized version of this unoptimzed body of text pls. Once successfully done we will try to stem the words too. Testing trying embodiment embodied",
+		payload := gxg.TokenizeRequest{
+			Target: &gxg.CallTarget{Services: []string{"NLTK/tokenize"}, Version: "0.1"},
+			Body:   "Give me a tokenized version of this unoptimzed body of text pls. Once successfully done we will try to stem the words too. Testing trying embodiment embodied",
 			Locale: "en",
 		}
 		go func() {
@@ -67,10 +64,10 @@ func TestGoXGo(t *testing.T) {
 	time.Sleep(0.5e9)
 
 	// test vsm diff
-	vsmComparePayload := gxg.VsmDiffRequest {
-		Target: &gxg.CallTarget { Services: []string{"NLTK/vsm_compare"}, Version: "0.1" },
+	vsmComparePayload := gxg.VsmDiffRequest{
+		Target:         &gxg.CallTarget{Services: []string{"NLTK/vsm_compare"}, Version: "0.1"},
 		Drop_Stopwords: true,
-		Stem_Words: true,
+		Stem_Words:     true,
 		Docs: []string{`The domestic cat[1][2] (Felis catus[2] or Felis silvestris catus[4]) is a small, usually furry, domesticated, and carnivorous mammal. It is often called the housecat when kept as an indoor pet,[6] or simply the cat when there is no need to distinguish it from other felids and felines. Cats are valued by humans for companionship and their ability to hunt vermin and household pests.
 
 Cats are similar in anatomy to the other felids, with strong, flexible bodies, quick reflexes, sharp retractable claws, and teeth adapted to killing small prey. Cat senses fit a crepuscular and predatory ecological niche. Cats can hear sounds too faint or too high in frequency for human ears, such as those made by mice and other small game. They can see in near darkness. Like most other mammals, cats have poorer color vision and a better sense of smell than humans.
@@ -97,10 +94,10 @@ Most breeds of dogs are at most a few hundred years old, having been artificiall
 	gxg.Call(&dsn, &vsmComparePayload, &vsmDiffResponse)
 	t.Logf("Compare cats and dogs: \n%+v\n", vsmDiffResponse)
 
-	vsmComparePayload = gxg.VsmDiffRequest {
-		Target: &gxg.CallTarget { Services: []string{"NLTK/vsm_compare"}, Version: "0.1" },
+	vsmComparePayload = gxg.VsmDiffRequest{
+		Target:         &gxg.CallTarget{Services: []string{"NLTK/vsm_compare"}, Version: "0.1"},
 		Drop_Stopwords: true,
-		Stem_Words: true,
+		Stem_Words:     true,
 		Docs: []string{`The domestic cat[1][2] (Felis catus[2] or Felis silvestris catus[4]) is a small, usually furry, domesticated, and carnivorous mammal. It is often called the housecat when kept as an indoor pet,[6] or simply the cat when there is no need to distinguish it from other felids and felines. Cats are valued by humans for companionship and their ability to hunt vermin and household pests.
 
 Cats are similar in anatomy to the other felids, with strong, flexible bodies, quick reflexes, sharp retractable claws, and teeth adapted to killing small prey. Cat senses fit a crepuscular and predatory ecological niche. Cats can hear sounds too faint or too high in frequency for human ears, such as those made by mice and other small game. They can see in near darkness. Like most other mammals, cats have poorer color vision and a better sense of smell than humans.
