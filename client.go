@@ -4,6 +4,7 @@
 package goxgo
 
 import (
+	"errors"
 	"fmt"
 	zmq "github.com/alecthomas/gozmq"
 )
@@ -56,7 +57,6 @@ func (c *Conn) Dial(dsn *DSN) (err error) {
 	if err == nil {
 		c.connected = true
 	}
-	// fmt.Println("Dialing to: " + fmt.Sprintf("%v://%v:%v", dsn.Protocol, dsn.Host, dsn.Port) )
 	c.Socket.Connect(fmt.Sprintf("%v://%v:%v", dsn.Protocol, dsn.Host, dsn.Port))
 	return
 }
@@ -79,14 +79,14 @@ func (c *Conn) Close() {
 Serialize the given payload, send it over the wire and return the
 response data
 */
-func (c *Conn) Send(payload interface{}) (response []byte) {
+func (c *Conn) Send(payload interface{}) (response []byte, err error) {
 	msg, err := Serialize(&payload)
 	if err != nil {
-		panic(fmt.Sprintf("Could not serialize payload: %+v\n%+v", payload, err.Error()))
+		err = errors.New(fmt.Sprintf("Could not serialize payload: %+v\n%+v", payload, err.Error()))
+		return
 	}
 	c.Socket.Send([]byte(msg), 0)
 	response, _ = c.Socket.Recv(0)
-	// fmt.Println(string(response))
 	return
 }
 
@@ -95,15 +95,19 @@ Convinience function that will create a connection,
 send a payload and Unserialize the reponse into a response
 structure.
 */
-func Call(dsn *DSN, request interface{}, response interface{}) {
+func Call(dsn *DSN, request interface{}, response interface{}) (err error) {
 	c := Conn{Dsn: dsn}
-	var err error
 	err = c.Dial(dsn)
 	if err != nil {
-		fmt.Println("Shit hit the fan: %v.", err)
+		err = errors.New(fmt.Sprintf("Shit hit the fan: %v.", err))
+		return
 	}
 	defer c.Close()
 
-	Unserialize(c.Send(&request), &response)
+	r, err := c.Send(&request)
+	if err != nil {
+		return
+	}
+	err = Unserialize(r, &response)
 	return
 }

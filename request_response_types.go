@@ -3,12 +3,6 @@
 
 package goxgo
 
-import (
-	"fmt"
-	"encoding/json"
-)
-
-
 /*
 CallTarget contains the target information for the payload by naming services to
 be called and the desired version of that service
@@ -29,12 +23,11 @@ Version - a <string> representing the API version
 */
 type CallTarget struct {
 	Services []string
-	Version	 string
+	Version  string
 }
 
-
 /* TokenizeRequest - request structure
-*/
+ */
 type TokenizeRequest struct {
 	Target *CallTarget
 	Body   string
@@ -42,15 +35,14 @@ type TokenizeRequest struct {
 }
 
 /* TokenizeResponse - response structure
-*/
+ */
 type TokenizeResponse struct {
-	Locale string	`json:"locale"`
+	Locale string   `json:"locale"`
 	Tokens []string `json:"tokens"`
 }
 
-
 /* StemRequest - request structure
-*/
+ */
 type StemRequest struct {
 	Target *CallTarget
 	Words  []string
@@ -58,48 +50,27 @@ type StemRequest struct {
 }
 
 /* StemResponse - response structure
-*/
+ */
 type StemResponse struct {
-	Locale string	`json:"locale"`
+	Locale string   `json:"locale"`
 	Words  []string `json:"tokens"`
 }
-
 
 /* VsmDiffRequest - Request structure for the cosine difference function.
 
 
 */
 type VsmDiffRequest struct {
-	Target  		*CallTarget
-	Docs            []string
-	Drop_Stopwords	bool
-	Stem_Words		bool
+	Target         *CallTarget
+	Docs           []string
+	Drop_Stopwords bool
+	Stem_Words     bool
 }
 
 /* VsmDiffRequest - Response structure
-*/
+ */
 type VsmDiffResponse struct {
-	Diff	 float64 `json:"cosine_diff"`
+	Diff     float64 `json:"cosine_diff"`
 	DocLangA string  `json:doc1_detected_lang`
 	DocLangB string  `json:doc2_detected_lang`
-}
-
-
-// Serialization function for the request structures into JSON
-func Serialize(i interface{}) (payload []byte, err error) {
-	payload, err = json.Marshal(i)
-	if err != nil {
-		fmt.Println("error:", err)
-	}
-	return
-}
-
-// Unserialization function for the structures from JSON to a
-// response structure
-func Unserialize(payload []byte, i interface{}) (err error){
-	err = json.Unmarshal(payload, &i)
-	if err != nil {
-		fmt.Println("error:", err)
-	}
-	return
 }
