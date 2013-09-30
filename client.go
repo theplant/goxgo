@@ -37,23 +37,14 @@ type Conn struct {
 Set up the connection to a goxgo service specified by the DSN
 */
 func (c *Conn) Dial(dsn *DSN) (err error) {
-	c.Context, err = zmq.NewContext()
-	if err != nil {
-		return err
-		// panic(fmt.Sprintf("Could not acquire ZMQ context: %+v", err.Error()))
-	}
+	c.Context = Context
 	c.Socket, err = c.Context.NewSocket(zmq.REQ)
 	if err != nil {
 		return err
-		// panic(fmt.Sprintf("Could not acquire ZMQ socket: %+v", err.Error()))
 	}
-	// using a global context and then making a lot of calls from separate
-	// goroutines produces funky behaviour - running out of fds and
-	// null pointer dereferences
-	// c.Context = ZmqContext
 
 	// TODO: add a conn/conf parameter to set a timeout
-	// c.Socket.SetSockOptInt(zmq.LINGER, 0)
+	c.Socket.SetSockOptInt(zmq.LINGER, 0)
 	if err == nil {
 		c.connected = true
 	}
@@ -68,8 +59,6 @@ func (c *Conn) Close() {
 	if c.connected {
 		c.Socket.Close()
 		// fmt.Println("socket closed...")
-		c.Context.Close()
-		// fmt.Println("context closed...")
 	}
 	c.connected = false
 	return

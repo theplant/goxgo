@@ -5,13 +5,12 @@ from gevent import monkey; monkey.patch_all()
 
 from service_frontend import ZmqFrontend
 from service import Service
-from lib.static_nltk_wrappers import tokenize, stem, vsm_compare
+from lib.static_nltk_wrappers import tokenize, stem
 
 # name a service and add some functions that it provides
 NLTKService = Service( name = 'NLTK' )
 NLTKService.register_service_method( f = tokenize )
 NLTKService.register_service_method( f = stem )
-NLTKService.register_service_method( f = vsm_compare )
 
 frontends = []
 # register that service with a (netowrking) frontend
