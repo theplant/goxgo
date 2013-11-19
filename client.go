@@ -7,6 +7,7 @@ import (
 	"errors"
 	"fmt"
 	zmq "github.com/alecthomas/gozmq"
+	dbg "runtime/debug"
 )
 
 /*
@@ -37,6 +38,12 @@ type Conn struct {
 Set up the connection to a goxgo service specified by the DSN
 */
 func (c *Conn) Dial(dsn *DSN) (err error) {
+	defer func() {
+		if err := recover(); err != nil {
+			fmt.Printf("goXgo Dial failed: %s\r\n%v", err, string(dbg.Stack()))
+		}
+	}()
+
 	c.Context = Context
 	c.Socket, err = c.Context.NewSocket(zmq.REQ)
 	if err != nil {
